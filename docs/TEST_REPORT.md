@@ -5,7 +5,7 @@
 > **验证命题**：“算力需求拉动下，中际旭创盈利能力大幅跃升主要得益于高端光模块产品结构升级”  
 > **测试环境**：Windows 11 / Python 3.14.3 / Pytest 9.2.0 (`.venv\Scripts\python.exe`)  
 > **报告日期**：2026-10-30  
-> **执行结果**：33 项自动化测试（31 项离线单元与门禁测试 + 2 项在线真实接口测试）100% 通过；真实接口全链路端到端运行成功闭环落盘。
+> **执行结果**：33 项自动化测试（31 项离线单元与门禁测试 + 2 项在线真实接口测试）全部通过；真实接口全链路端到端运行成功闭环落盘。
 
 ---
 
@@ -75,10 +75,10 @@ tests/test_api_integration.py::test_api_clarify_live PASSED              [100%]
 | :--- | :--- | :--- |
 | `test_parse_markdown_tables_multi_row_no_overwrite` | 物理接口/解析 | 验证 iFinD 多行时序 Markdown 表解析为 `list[dict]` 逐行时序记录，断言前 N-1 行不会被最后一行单 dict 循环赋值覆盖。 |
 | `test_fuyao_disaggregate_quarterly_flow_fiscal_structure` | 物理接口/流量拆解 | 验证单季流量拆解严格采用扶摇真实接口的整型 `fiscal_year` 与字符串 `fiscal_period` ('Q1'~'Q4')，相邻期相减，不依赖不存在的 `report_date`。 |
-| `test_validator_numeric_tampering_with_real_quote` | 原文防伪核验 | 模拟原文引文真实存在但字段数值被恶意篡改，四要素防伪门禁 100% 拦截并置 `verified_in_raw=False`。 |
+| `test_validator_numeric_tampering_with_real_quote` | 原文防伪核验 | 模拟原文引文真实存在但字段数值被恶意篡改，四要素防伪门禁有效拦截并置 `verified_in_raw=False`。 |
 | `test_validator_period_mismatch` | 报告期防伪核验 | 模拟将 2024 年真实原话张冠李戴标记为 2023-FY 报告期，门禁识别跨期不匹配并拦截。 |
 | `test_synthesizer_output_no_auto_injection_backdoor` | 去硬编码/反洗白门禁 | 验证移除模型输出解析中自动塞入茅台渠道反转条件与固定免责声明的后门，保持标的中立与门禁真实拦截。 |
-| `test_cleanup_orphan_tasks` | 容错收敛机制 | 验证服务异常中断或重启时，扫描磁盘自动将非终态任务收敛置为 `FAILED`，记录中断说明，杜绝任务永久滞留伪运行状态。 |
+| `test_cleanup_orphan_tasks` | 容错收敛机制 | 验证服务异常中断或重启时，扫描磁盘自动将非终态任务收敛置为 `FAILED`，记录中断说明，防止任务永久滞留伪运行状态。 |
 | `test_api_verify_validation_rules` | 接口契约防护 | 强校验起止日期（`start_date >= end_date` 返回 400）、空命题拦截（400）与荐股违规敏感词拦截（400）。 |
 
 ---
@@ -98,8 +98,8 @@ tests/test_api_integration.py::test_api_clarify_live PASSED              [100%]
 - **确定性计算指标 (computed_metrics)**: 60 项（严格同比、单季流量拆解、研发费用率、个股相对行业超额收益率）
 - **有效证据卡片 (evidence_items)**: 7 张
 - **两阶段质检门禁**:
-  - Step 6.1 合成前质检门禁：**100% 通过**
-  - Step 6.3 合成后质检门禁：**100% 通过**（无幽灵引用，无后门静默修补）
+  - Step 6.1 合成前质检门禁：**通过**
+  - Step 6.3 合成后质检门禁：**通过**（未出现幽灵引用，无后门静默修补）
 - **终态判定 (TaskStatus)**: `PARTIALLY_COMPLETED`
   - *判定依据*：虽然通过全部门禁质检，但报告保留了关键客观数据缺口（公开披露中缺乏各细分产品毛利与利润增量的直接审计拆解），符合实施方案第 164 条审慎降级规范。
 
@@ -136,4 +136,4 @@ RAW-INC-001 (2024-Q4 利润表)
                     └── SUB-01 (关联子假设)
                           └── FinalReport.cited_evidence_ids (报告最终援引)
 ```
-整个流转链路 ID 100% 严密闭环，无后门修补，无断链节点。
+整个流转链路 ID 保持严密闭环，无后门修补，无断链节点。
