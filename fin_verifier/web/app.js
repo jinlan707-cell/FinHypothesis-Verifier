@@ -63,6 +63,10 @@ function loadDemo(demoId) {
   document.getElementById("inputTicker").value = `${demo.ticker} ${demo.ticker_name}`;
   document.getElementById("inputStartDate").value = demo.analysis_start_date;
   document.getElementById("inputEndDate").value = demo.analysis_end_date;
+  const periodDatesText = document.getElementById("clarifyPeriodDatesText");
+  if (periodDatesText) {
+    periodDatesText.innerText = `${demo.analysis_start_date} 至 ${demo.analysis_end_date}`;
+  }
   document.getElementById("inputHypothesis").value = demo.hypothesis;
   document.getElementById("clarifyResultBox").classList.add("hidden");
   document.getElementById("pipelineErrorBanner").classList.add("hidden");
@@ -161,6 +165,17 @@ async function handleClarify() {
     const data = await res.json();
 
     document.getElementById("editableClarifiedHypothesis").value = data.clarified_hypothesis;
+    if (data.analysis_start_date) {
+      document.getElementById("inputStartDate").value = data.analysis_start_date;
+    }
+    if (data.analysis_end_date) {
+      document.getElementById("inputEndDate").value = data.analysis_end_date;
+    }
+    const periodDatesText = document.getElementById("clarifyPeriodDatesText");
+    if (periodDatesText) {
+      periodDatesText.innerText = `${data.analysis_start_date || startDate} 至 ${data.analysis_end_date || endDate}`;
+    }
+
     document.getElementById("complianceNoteText").innerHTML = `<strong><i class="fa-solid fa-info-circle"></i> 合规审查提示:</strong> ${escapeHtml(data.compliance_notes)}`;
     
     const dimsContainer = document.getElementById("suggestedDimsTags");

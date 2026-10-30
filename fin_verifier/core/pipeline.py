@@ -216,10 +216,11 @@ class VerificationPipeline:
 
         sy_int = int(task.analysis_start_date[:4])
         ey_int = int(task.analysis_end_date[:4])
-        curr_year = datetime.now().year
+        curr_year = max(datetime.now().year, ey_int)
 
-        # 动态确定季报拉取条数：覆盖同比基期年 (sy_int - 1) 至目标分析期末 (ey_int)
-        stmt_limit = min(16, max(8, (ey_int - (sy_int - 1) + 1) * 4))
+        # 动态确定季报拉取条数：扶摇财报接口采用从最新已披露报告期倒序 limit 语义。
+        # 为确保完整覆盖历史同比基期 (sy_int - 1) 至目标分析期末 (ey_int)，拉取条数需以当前实际披露年份回溯至基期年：
+        stmt_limit = min(24, max(16, (curr_year - (sy_int - 1) + 1) * 4))
 
         # 2.1 调取扶摇财报（利润表、资产负债表、现金流量表）
         # A. 利润表
@@ -320,8 +321,12 @@ class VerificationPipeline:
         except Exception as e:
             logger.warning(f"获取扶摇现金流量表异常: {e}")
 
-        # 真实回填最新报告期 (latest_financial_period)
-        if task.retrieved_periods:
+        # 真实回填目标分析期内最新报告期 (latest_financial_period)
+        # 严格遵守 AGENTS.md 第 2.2 节：区分目标分析期内财务期与后续新报告观察期
+        target_periods = [p for p in task.retrieved_periods if int(p[:4]) <= ey_int]
+        if target_periods:
+            task.latest_financial_period = sorted(target_periods)[-1]
+        elif task.retrieved_periods:
             task.latest_financial_period = sorted(task.retrieved_periods)[-1]
 
         # 2.2 调取扶摇五维财务指标（依据分析期动态设定，如 2023-4, 2024-3）
@@ -763,6 +768,9 @@ class VerificationPipeline:
                         try:
                             c_year, c_suf = DeterministicCalculator.parse_period(f1.period)
                             b_year, b_suf = DeterministicCalculator.parse_period(f2.period)
+                            # 严格聚焦目标分析期间：后续超出分析终止年的观察期单列，不混入主归因计算池
+                            if c_year > ey_int:
+                                continue
                             if c_suf == b_suf and c_year - b_year == 1:
                                 c_name = f"{f1.period} {m_name}严格同比"
                                 if c_name not in existing_comp_names:
