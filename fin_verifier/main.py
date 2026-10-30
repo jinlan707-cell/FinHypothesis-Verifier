@@ -146,7 +146,7 @@ def clarify_hypothesis(req: ClarifyRequest):
 建议起始日期: {req.analysis_start_date or '2023-01-01'}
 建议终止日期: {req.analysis_end_date or '2024-12-31'}
 
-请给出合规、严谨的澄清命题与研究边界。"""
+请给出合规、严谨的澄清命题与研究边界。改写命题中的时间范围必须严格与指定的起始/终止日期完全保持一致，严禁擅自修改或缩窄起止日期！"""
 
     try:
         res: ClarifyOutput = llm_client.call_structured(

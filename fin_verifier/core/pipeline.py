@@ -188,7 +188,8 @@ class VerificationPipeline:
 澄清后命题: {task.clarified_hypothesis}
 分析区间: {task.analysis_start_date} 至 {task.analysis_end_date}
 
-请将该命题拆解为 2~4 个独立、可证伪的子假设，并给出数据需求与精准公告检索关键词（notice_search_keywords）。"""
+请将该命题拆解为 2~4 个独立、可证伪的子假设，并给出数据需求与精准公告检索关键词（notice_search_keywords）。
+【重要提示】：所有子假设陈述必须严格针对本次动态指定的完整分析区间（{task.analysis_start_date} 至 {task.analysis_end_date}）进行证伪设计，严禁退缩为其他历史单一年份！"""
 
         decomp_res: DecomposerOutput = self.llm.call_structured(
             system_prompt=DECOMPOSER_SYSTEM_PROMPT,
@@ -949,6 +950,7 @@ class VerificationPipeline:
         ]
 
         user_prompt = f"""标的: {task.ticker_name} ({task.ticker})
+动态分析区间: {task.analysis_start_date} 至 {task.analysis_end_date}
 子假设列表：
 {chr(10).join(subs_summary)}
 
@@ -959,6 +961,7 @@ class VerificationPipeline:
 {chr(10).join(comps_summary)}
 
 请根据审慎归因原则，将事实与计算结果归纳为证据卡片，归入对应的子假设，并严格赋予支持（SUPPORT）、反对（AGAINST）或无法验证（UNVERIFIABLE）极性。
+【重要要求】：请全面考察并引用整个动态分析区间（{task.analysis_start_date} 至 {task.analysis_end_date}）内的有效事实与计算，不得仅局限于某一特定历史年份。
 【铁律】：
 1. inherited_source_ids 严格只能填入实际存在的 raw_ref_id！
 2. fact_ids 严格只能填入实际存在的 fact_id！
@@ -1074,9 +1077,10 @@ class VerificationPipeline:
 
 请合成最终的研究证伪报告。
 【铁律】：
-1. 区分客观事实、审慎推论与客观缺口；
-2. 反转触发条件必须同时包含 HISTORICAL_ATTRIBUTION 与 FUTURE_SUSTAINABILITY 两类，并附带实质 analytical_basis；
-3. cited_evidence_ids 必须且只能包含本次提供的有效证据 ID！严禁编造任何未提供的证据 ID！{feedback_block}
+1. 报告的客观事实摘要（facts_summary）、审慎推论（inferences_summary）必须严格聚焦并反映本次动态设定的完整分析区间（{task.analysis_start_date} 至 {task.analysis_end_date}），严禁擅自退回或局限在某一特定历史单一年份；
+2. 区分客观事实、审慎推论与客观缺口；
+3. 反转触发条件必须同时包含 HISTORICAL_ATTRIBUTION 与 FUTURE_SUSTAINABILITY 两类，并附带实质 analytical_basis；
+4. cited_evidence_ids 必须且只能包含本次提供的有效证据 ID！严禁编造任何未提供的证据 ID！{feedback_block}
 """
         res: SynthesizerOutput = self.llm.call_structured(
             system_prompt=SYNTHESIZER_SYSTEM_PROMPT,
