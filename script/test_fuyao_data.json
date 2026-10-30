@@ -1,0 +1,221 @@
+{
+  "indicators_status": 200,
+  "indicators_headers": {
+    "Content-Type": "application/json",
+    "X-RateLimit-Limit": "15",
+    "X-RateLimit-Remaining": "15",
+    "X-Content-Type-Options": "nosniff",
+    "X-XSS-Protection": "0",
+    "Cache-Control": "no-cache, no-store, max-age=0, must-revalidate",
+    "Pragma": "no-cache",
+    "Expires": "0",
+    "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains",
+    "X-Frame-Options": "DENY",
+    "Date": "Thu, 29 Oct 2026 10:11:49 GMT",
+    "Server": "Stargate",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,PATCH,HEAD,OPTIONS,CONNECT,TRACE",
+    "Access-Control-Max-Age": "1800",
+    "Access-Control-Expose-Headers": "**",
+    "Access-Control-Allow-Credentials": "true",
+    "Vary": "Accept-Encoding",
+    "Content-Encoding": "gzip",
+    "X-Cache": "MISS from cachemd204172.10jqka.com.cn",
+    "Via": "1.1 cachemd204172.10jqka.com.cn (squid), http/1.1 cacheyzdx49-152.10jqka.com.cn (ApacheTrafficServer/10.0.3 [cMsSf ])",
+    "Age": "1",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive"
+  },
+  "indicators_data": {
+    "code": 0,
+    "message": "success",
+    "data": {
+      "thscode": "600519.SH",
+      "report": "2024-3",
+      "abilities": [
+        {
+          "ability": "growth",
+          "indicators": [
+            {
+              "index_id": "calculate_operating_income_yoy_growth_ratio",
+              "value": "16.95367100"
+            },
+            {
+              "index_id": "calculate_operating_profit_yoy_growth_ratio",
+              "value": "14.79438800"
+            },
+            {
+              "index_id": "total_assets_growth_ratio",
+              "value": "5.1599"
+            },
+            {
+              "index_id": "calculate_parent_holder_net_profit_yoy_growth_ratio",
+              "value": "15.03764000"
+            }
+          ]
+        },
+        {
+          "ability": "profitability",
+          "indicators": [
+            {
+              "index_id": "total_assets_net_ratio",
+              "value": "22.5325"
+            },
+            {
+              "index_id": "index_deduct_weighted_avg_roe",
+              "value": "17.6200"
+            },
+            {
+              "index_id": "sale_gross_margin",
+              "value": "91.5314"
+            },
+            {
+              "index_id": "sale_net_interest_ratio",
+              "value": "52.1887"
+            },
+            {
+              "index_id": "index_weighted_avg_roe",
+              "value": "26.0900"
+            }
+          ]
+        },
+        {
+          "ability": "solvency",
+          "indicators": [
+            {
+              "index_id": "cash_ratio",
+              "value": "155.68048300"
+            },
+            {
+              "index_id": "current_ratio",
+              "value": "6.1569"
+            },
+            {
+              "index_id": "quick_ratio",
+              "value": "4.9060"
+            },
+            {
+              "index_id": "earned_interest_multiple",
+              "value": null
+            },
+            {
+              "index_id": "assets_debt_ratio",
+              "value": "13.6285"
+            }
+          ]
+        },
+        {
+          "ability": "operation",
+          "indicators": [
+            {
+              "index_id": "total_assets_turnover_ratio",
+              "value": "0.4318"
+            },
+            {
+              "index_id": "inventory_turnover_ratio",
+              "value": "0.2161"
+            },
+            {
+              "index_id": "long_term_debt_equity_ratio",
+              "value": "0.15088500"
+            },
+            {
+              "index_id": "current_assets_turnover_ratio",
+              "value": "0.5312"
+            },
+            {
+              "index_id": "receive_account_turnover_ratio",
+              "value": "3426.0248"
+            }
+          ]
+        },
+        {
+          "ability": "cash-flow",
+          "indicators": [
+            {
+              "index_id": "net_profit_cash_content",
+              "value": "73.02839700"
+            },
+            {
+              "index_id": "cash_operating_index",
+              "value": "0.83628715"
+            },
+            {
+              "index_id": "operating_cash_flow_net_divide_income",
+              "value": "36.7799"
+            },
+            {
+              "index_id": "cash_meet_invest_ratio",
+              "value": "1.06228493"
+            }
+          ]
+        }
+      ]
+    },
+    "request_id": "00248fdf4af4447d88ba7b89209b38da"
+  },
+  "income_statement_status": 200,
+  "income_statement_data": {
+    "code": 0,
+    "message": "success",
+    "data": {
+      "timestamp": 1782748800000,
+      "item": [
+        {
+          "thscode": "600519.SH",
+          "ticker": "600519",
+          "period": "quarterly",
+          "fiscal_year": 2026,
+          "fiscal_period": "Q2",
+          "report_date_ms": 1786723200000,
+          "period_end_ms": 1782748800000,
+          "currency": "CNY",
+          "operating_income": 90703260964.48,
+          "operating_costs": 9473762565.88,
+          "operating_expenses": 30946044878.08,
+          "sales_fee": 3206308341.53,
+          "manage_fee": 3635355263.82,
+          "research_and_development_expenses": 114926219.6,
+          "operating_profit": 61411291686.27,
+          "interest_expenses": 76587662.57,
+          "profit_total": 61438419177.29,
+          "income_tax_expense": 15405088610.51,
+          "net_profit": 46033330566.78,
+          "parent_holder_net_profit": 44516880421.86,
+          "basic_eps": 35.57
+        },
+        {
+          "thscode": "600519.SH",
+          "ticker": "600519",
+          "period": "quarterly",
+          "fiscal_year": 2026,
+          "fiscal_period": "Q1",
+          "report_date_ms": 1777046400000,
+          "period_end_ms": 1774886400000,
+          "currency": "CNY",
+          "operating_income": 53909252220.51,
+          "operating_costs": 5520729200.32,
+          "operating_expenses": 17192223524.71,
+          "sales_fee": 1605764764.88,
+          "manage_fee": 1853763865.81,
+          "research_and_development_expenses": 59310724.46,
+          "operating_profit": 37537008686.42,
+          "interest_expenses": 40932871.08,
+          "profit_total": 37543249644.02,
+          "income_tax_expense": 9389418154.13,
+          "net_profit": 28153831489.89,
+          "parent_holder_net_profit": 27242512886.45,
+          "basic_eps": 21.76
+        }
+      ]
+    },
+    "request_id": "9859fe00e8cf420cb9f3814bc21335e5"
+  },
+  "valuation_status": 200,
+  "valuation_data": {
+    "code": 1001,
+    "message": "Missing required parameter: thscodes",
+    "data": null,
+    "request_id": "6fd18efde52345dbb3ac06c2f00d6a43"
+  }
+}

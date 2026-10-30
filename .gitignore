@@ -1,0 +1,41 @@
+# Environment variables and secrets
+.env
+script/.env
+*.env
+*.key
+*.token
+
+# Python virtual environment
+.venv/
+venv/
+ENV/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*~
+Thumbs.db
+Desktop.ini
+
+# Runtime data & Task artifacts (local runs)
+fin_verifier/data/tasks/*.json
+!fin_verifier/data/tasks/.gitkeep
+
+# Temporary / scratch files
+scratch/
+tmp/
+*.log
+
+# Question / Exam materials
+题目/

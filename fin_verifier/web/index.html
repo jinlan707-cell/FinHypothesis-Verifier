@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinHypothesis-Verifier | 投资命题与多证据验证系统</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- 顶部导航栏 -->
+  <header class="app-header">
+    <div class="logo-area">
+      <i class="fa-solid fa-scale-balanced logo-icon"></i>
+      <div class="logo-text">
+        <h1>FinHypothesis-Verifier</h1>
+        <span class="sub-title">100% 真实金融数据驱动 · 强 ID 溯源对账 · 证伪主义工作台</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="demo-selector">
+        <label><i class="fa-solid fa-flask"></i> 典型案例:</label>
+        <button class="btn-demo active" onclick="loadDemo('demo-zhongji')">中际旭创 (算力光模块)</button>
+        <button class="btn-demo" onclick="loadDemo('demo-catl')">宁德时代 (动力电池)</button>
+        <button class="btn-demo" onclick="loadDemo('demo-naura')">北方华创 (半导体设备)</button>
+      </div>
+      <button class="btn-secondary" onclick="openHistoryModal()">
+        <i class="fa-solid fa-clock-rotate-left"></i> 历史任务
+      </button>
+      <button class="btn-secondary" onclick="openCompareModal()">
+        <i class="fa-solid fa-code-compare"></i> 双任务对比
+      </button>
+    </div>
+  </header>
+
+  <!-- 主体工作区 -->
+  <main class="main-container">
+    <!-- 左侧/上方：命题配置与 Step 0 澄清工作台 -->
+    <section class="panel hypothesis-setup-panel">
+      <div class="panel-header">
+        <h2><i class="fa-solid fa-pen-to-square"></i> Step 0: 投资命题澄清与合规确认</h2>
+        <span class="badge badge-info">人机对账协作</span>
+      </div>
+      <div class="panel-body">
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label>证券标的代码/简称:</label>
+            <div class="ticker-input-wrapper">
+              <input type="text" id="inputTicker" placeholder="输入股票代码或名称，如 300308.SZ 中际旭创" value="300308.SZ 中际旭创">
+              <div id="tickerCandidatesDropdown" class="dropdown-menu hidden"></div>
+            </div>
+          </div>
+          <div class="form-group flex-1">
+            <label>分析起始会计期:</label>
+            <input type="date" id="inputStartDate" value="2023-01-01">
+          </div>
+          <div class="form-group flex-1">
+            <label>分析终止会计期:</label>
+            <input type="date" id="inputEndDate" value="2024-12-31">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>投资者初始命题 (支持口语化推论):</label>
+          <textarea id="inputHypothesis" rows="2" placeholder="请输入待验证的投资命题，例如：算力需求拉动下，中际旭创盈利能力大幅跃升主要得益于高端光模块产品结构升级">算力需求拉动下，中际旭创盈利能力大幅跃升主要得益于高端光模块产品结构升级</textarea>
+        </div>
+
+        <div class="action-bar">
+          <button class="btn-primary" id="btnClarify" onclick="handleClarify()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> 智能合规澄清与边界界定
+          </button>
+        </div>
+
+        <!-- 可编辑确认卡片 (Step 0 输出) -->
+        <div id="clarifyResultBox" class="clarify-box hidden">
+          <div class="clarify-header">
+            <h3><i class="fa-solid fa-file-shield"></i> 澄清后规范命题（可点击二次编辑）</h3>
+            <span class="badge badge-success">合规审查通过</span>
+          </div>
+          <div class="clarify-body">
+            <textarea id="editableClarifiedHypothesis" rows="2"></textarea>
+            <div class="compliance-note" id="complianceNoteText"></div>
+            <div class="suggested-dims">
+              <label>推荐证伪维度:</label>
+              <div id="suggestedDimsTags" class="tag-group"></div>
+            </div>
+            <div class="confirm-actions">
+              <button class="btn-primary" onclick="confirmClarifiedAndVerify()">
+                <i class="fa-solid fa-check-double"></i> 确认该命题并异步启动流水线
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 中间：流水线动态流转指示器 -->
+    <section class="panel pipeline-progress-panel" id="pipelineProgressPanel">
+      <div class="panel-header">
+        <h2><i class="fa-solid fa-timeline"></i> 流水线状态流转 (State Pipeline)</h2>
+        <div class="pipeline-task-meta" id="pipelineTaskMeta">
+          <span id="currentTaskIdLabel">当前无运行任务</span>
+          <span id="taskStatusBadge" class="badge badge-gray">IDLE</span>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="stepper-wrapper">
+          <div class="step-item" id="stepNode-CREATED">
+            <div class="step-icon"><i class="fa-solid fa-plus"></i></div>
+            <div class="step-label">任务创建</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="stepNode-DECOMPOSING">
+            <div class="step-icon"><i class="fa-solid fa-sitemap"></i></div>
+            <div class="step-label">子假设拆解</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="stepNode-RETRIEVING">
+            <div class="step-icon"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+            <div class="step-label">真实数据拉取</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="stepNode-EXTRACTING_AND_COMPUTING">
+            <div class="step-icon"><i class="fa-solid fa-calculator"></i></div>
+            <div class="step-label">抽取与确定性计算</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="stepNode-SUFFICIENCY_CHECKING">
+            <div class="step-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+            <div class="step-label">覆盖度审查</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="stepNode-REPLENISHING">
+            <div class="step-icon"><i class="fa-solid fa-rotate-right"></i></div>
+            <div class="step-label">定向补检回溯</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="stepNode-CLASSIFYING">
+            <div class="step-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="step-label">审慎证据归类</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="stepNode-VALIDATING">
+            <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="step-label">合成前质检门禁</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="stepNode-SYNTHESIZING">
+            <div class="step-icon"><i class="fa-solid fa-file-lines"></i></div>
+            <div class="step-label">报告合成与后置质检</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step-item" id="stepNode-COMPLETED">
+            <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+            <div class="step-label">终态落盘</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 异常与质检门禁拦截错误横幅 -->
+    <div id="pipelineErrorBanner" class="error-banner hidden">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div class="error-msg-box">
+        <h4>任务核验中断或门禁硬拦截 (FAILED)</h4>
+        <p id="pipelineErrorText"></p>
+      </div>
+    </div>
+
+    <!-- 下方/结果呈现：研报总结论、反转条件与多证据看板 -->
+    <div id="resultsContainer" class="results-wrapper hidden">
+      <!-- 1. 总结论与三相事实看板 -->
+      <section class="panel verdict-panel">
+        <div class="verdict-banner">
+          <div class="verdict-status-box">
+            <span class="verdict-tag" id="verdictStatusTag">SUPPORTED</span>
+            <span class="confidence-tag" id="confidenceLevelTag">HIGH 置信度</span>
+          </div>
+          <h2 class="verdict-headline" id="verdictHeadlineText">结论生成中...</h2>
+          <div class="compliance-disclaimer" id="complianceDisclaimerText"></div>
+        </div>
+
+        <div class="tri-summary-grid">
+          <div class="summary-card facts-card">
+            <h4><i class="fa-solid fa-check-circle"></i> 已核验客观事实 (Facts)</h4>
+            <ul id="factsList"></ul>
+          </div>
+          <div class="summary-card inferences-card">
+            <h4><i class="fa-solid fa-lightbulb"></i> 审慎因果推论 (Inferences)</h4>
+            <ul id="inferencesList"></ul>
+          </div>
+          <div class="summary-card uncertainties-card">
+            <h4><i class="fa-solid fa-triangle-exclamation"></i> 客观缺口与不确定性 (Gaps)</h4>
+            <ul id="uncertaintiesList"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- 1.5 子假设分项独立判定概览看板 -->
+      <section class="panel sub-hypotheses-panel">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-list-check"></i> 子假设分项独立判定概览</h2>
+          <span class="badge badge-info">正交证伪分项</span>
+        </div>
+        <div class="panel-body">
+          <div class="sub-hypotheses-grid" id="subHypothesesGrid"></div>
+        </div>
+      </section>
+
+      <!-- 2. 反转触发条件看板 (Falsification Triggers) -->
+      <section class="panel falsification-panel">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-arrows-rotate"></i> 反转触发条件 (什么信息会改变当前结论)</h2>
+          <span class="badge badge-warning">严格区分历史归因 vs 未来持续性</span>
+        </div>
+        <div class="panel-body">
+          <div class="falsification-grid" id="falsificationGrid"></div>
+        </div>
+      </section>
+
+      <!-- 3. 三栏多证据看板 (Evidence Board) -->
+      <section class="panel evidence-board-panel">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-cubes-stacked"></i> 多证据看板 (点击卡片右侧穿透溯源)</h2>
+          <div class="evidence-stats" id="evidenceStats"></div>
+        </div>
+        <div class="panel-body">
+          <div class="evidence-columns-grid">
+            <!-- 支持证据列 -->
+            <div class="evidence-col support-col">
+              <div class="col-header">
+                <h3><i class="fa-solid fa-thumbs-up"></i> 支持证据 (SUPPORT)</h3>
+                <span class="col-count" id="supportCount">0</span>
+              </div>
+              <div class="cards-list" id="supportCardsList"></div>
+            </div>
+            <!-- 反对证据列 -->
+            <div class="evidence-col against-col">
+              <div class="col-header">
+                <h3><i class="fa-solid fa-thumbs-down"></i> 反对证据 (AGAINST)</h3>
+                <span class="col-count" id="againstCount">0</span>
+              </div>
+              <div class="cards-list" id="againstCardsList"></div>
+            </div>
+            <!-- 无法验证证据列 -->
+            <div class="evidence-col unverifiable-col">
+              <div class="col-header">
+                <h3><i class="fa-solid fa-circle-question"></i> 无法验证 (UNVERIFIABLE)</h3>
+                <span class="col-count" id="unverifiableCount">0</span>
+              </div>
+              <div class="cards-list" id="unverifiableCardsList"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. 基于已存事实的追问控制台 -->
+      <section class="panel inquiry-panel">
+        <div class="panel-header">
+          <h2><i class="fa-solid fa-comments"></i> 证据闭环追问 (严格基于已存事实对账)</h2>
+          <span class="badge badge-info">严禁调用未核验外部记忆</span>
+        </div>
+        <div class="panel-body">
+          <div class="inquiry-history" id="inquiryHistory"></div>
+          <div class="inquiry-input-bar">
+            <input type="text" id="inputInquiryQuestion" placeholder="针对当前已核验数据继续追问（如：茅台2023年直销与批发增速具体差多少个百分点？）">
+            <button class="btn-primary" id="btnSendInquiry" onclick="handleSendInquiry()">
+              <i class="fa-solid fa-paper-plane"></i> 提问
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- 证据穿透右侧抽屉 (Evidence Trace Drawer) -->
+  <div id="evidenceDrawerOverlay" class="drawer-overlay hidden" onclick="closeDrawer()"></div>
+  <aside id="evidenceDrawer" class="drawer hidden">
+    <div class="drawer-header">
+      <h3 id="drawerTitle">证据穿透追溯</h3>
+      <button class="btn-close" onclick="closeDrawer()">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawerBody">
+      <!-- 动态填入穿透溯源链路 -->
+    </div>
+  </aside>
+
+  <!-- 历史任务模态框 -->
+  <div id="historyModal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-clock-rotate-left"></i> 历史研究任务库</h3>
+        <button class="btn-close" onclick="closeHistoryModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="history-filter-bar">
+          <label><input type="checkbox" id="chkStarredOnly" onchange="loadTaskList()"> 仅展示已收藏任务</label>
+        </div>
+        <div class="task-table-wrapper">
+          <table class="task-table">
+            <thead>
+              <tr>
+                <th>收藏</th>
+                <th>标的</th>
+                <th>验证命题</th>
+                <th>结论状态</th>
+                <th>置信度</th>
+                <th>创建时间</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="taskTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 双任务对比模态框 -->
+  <div id="compareModal" class="modal hidden">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-code-compare"></i> 双任务并排对比视图 (Side-by-Side)</h3>
+        <button class="btn-close" onclick="closeCompareModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="compare-selectors">
+          <div class="selector-box">
+            <label>任务 A:</label>
+            <select id="selectTaskA"></select>
+          </div>
+          <div class="selector-box">
+            <label>任务 B:</label>
+            <select id="selectTaskB"></select>
+          </div>
+          <button class="btn-primary" onclick="handleExecuteCompare()">
+            <i class="fa-solid fa-arrows-split-up-and-left"></i> 执行并排对比
+          </button>
+        </div>
+        <div id="compareResultView" class="compare-result-view hidden"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

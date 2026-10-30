@@ -1,0 +1,37 @@
+{
+  "fuyao_industry": {
+    "status": "PASS",
+    "stock": "600519.SH",
+    "industry_name": "白酒",
+    "industry_code": "881273.TI",
+    "bars_count": 242,
+    "return_pct": -16.73
+  },
+  "ifind_financials": {
+    "status": "PASS",
+    "columns_parsed": 2,
+    "sample": {
+      "证券代码": {
+        "raw": "600519.SH",
+        "norm_val": 600519.0,
+        "norm_unit": "元"
+      },
+      "证券简称": {
+        "raw": "贵州茅台",
+        "norm_val": null,
+        "norm_unit": "unknown"
+      }
+    }
+  },
+  "siliconflow_llm": {
+    "status": "PASS",
+    "duration_ms": 15472,
+    "model": "deepseek-ai/DeepSeek-V4.1-Flash",
+    "parsed_keys": [
+      "ticker",
+      "hypothesis_clarified",
+      "sub_hypotheses"
+    ],
+    "sub_hypotheses_count": 4
+  }
+}

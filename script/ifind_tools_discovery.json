@@ -1,0 +1,662 @@
+{
+  "hexin-ifind-ds-news-mcp": {
+    "status": "online",
+    "tools": [
+      {
+        "name": "search_notice",
+        "description": "A股、基金、港美股公告内容语义查询工具。输入查询请求，返回相关公告段落文本。\n\n请求样例:\n{\n\"query\":\"光迅科技 2024年度报告 公司报告期从事主要业务\",\n\"time_start\":\"2025-01-01\",\n\"time_end\":\"2026-01-01\",\n\"size\":5\n}",
+        "parameters": {
+          "required": [
+            "query",
+            "size",
+            "time_end",
+            "time_start"
+          ],
+          "properties": {
+            "time_end": {
+              "description": "公告发布时间范围的终止日期。日期格式 yyyyy-MM-dd",
+              "type": "string"
+            },
+            "query": {
+              "description": "查询内容，自然语言格式，要求表达清晰精炼，一般包含证券实体、公告类型、以及重点关注信息描述等要素。",
+              "type": "string"
+            },
+            "size": {
+              "default": 5,
+              "type": "number",
+              "description": "期望返回片段数量，一般由上下文资源和请求明确度决定：针对性查询时，query详细，可调低；宽泛查询时，query模糊，可调高。上限20"
+            },
+            "time_start": {
+              "description": "公告发布日期范围的起始日期。日期格式 yyyyy-MM-dd",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "search_news",
+        "description": "同花顺财经新闻资讯相关片段检索。输入查询内容，返回相关新闻资讯片段。\n\n请求样例:\n{\n\"query\":\"盈趣科技 脑机接口相关业务进展\",\n\"time_start\":\"2025-01-01\",\n\"time_end\":\"2026-01-01\",\n\"size\":5\n}",
+        "parameters": {
+          "required": [
+            "query",
+            "size",
+            "time_end",
+            "time_start"
+          ],
+          "properties": {
+            "time_end": {
+              "description": "资讯日期范围的终止日期。",
+              "type": "string"
+            },
+            "query": {
+              "description": "查询内容，自然语言格式，要求表达清晰精炼，一般包含证券实体、行业板块等关注实体；以及重点关注资讯信息等要素。",
+              "type": "string"
+            },
+            "size": {
+              "default": 5,
+              "type": "number",
+              "description": "期望返回资讯片段数量，一般由上下文资源和请求明确度决定：针对性查询时，query详细，可调低；宽泛查询时，query模糊，可调高。上限20"
+            },
+            "time_start": {
+              "description": "资讯日期范围的起始日期。",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "search_trending_news",
+        "description": "同花顺热门事件驱动相关资讯搜索。注重获取近期关注度高的热点事件资讯，该工具注重时效性与传播性，故不覆盖低热度资讯或旧资讯。支持时效性、情感方向、行业分类筛选与关键词查询，但限制不宜过严。\n\n请求样例:\n{\n\"time_scope\":\"24小时\",\n\"sensitive\":\"全部\",\n\"industry_name\":\"计算机\",\n\"keyword\":\"智能体\",\n\"size\":5\n}",
+        "parameters": {
+          "required": [
+            "size"
+          ],
+          "properties": {
+            "industry_name": {
+              "enum": [
+                "交通运输",
+                "传媒",
+                "公用事业",
+                "农林牧渔",
+                "医药生物",
+                "商贸零售",
+                "国防军工",
+                "基础化工",
+                "家用电器",
+                "建筑材料",
+                "建筑装饰",
+                "房地产",
+                "有色金属",
+                "机械设备",
+                "汽车",
+                "煤炭",
+                "环保",
+                "电力设备",
+                "电子",
+                "石油石化",
+                "社会服务",
+                "纺织服饰",
+                "美容护理",
+                "计算机",
+                "轻工制造",
+                "通信",
+                "钢铁",
+                "银行",
+                "非银金融",
+                "食品饮料"
+              ],
+              "type": "string",
+              "description": "资讯所属行业名称筛选(单行业)，为空代表全行业"
+            },
+            "keyword": {
+              "description": "资讯包含关键词。建议简洁通用，否则可能导致无查询结果。",
+              "type": "string"
+            },
+            "time_scope": {
+              "default": "24小时",
+              "enum": [
+                "6小时",
+                "24小时",
+                "近一周"
+              ],
+              "type": "string",
+              "description": "资讯时效性"
+            },
+            "size": {
+              "default": 5,
+              "type": "number",
+              "description": "期望返回热门资讯数量，上限20"
+            },
+            "sensitive": {
+              "default": "全部",
+              "enum": [
+                "正面",
+                "负面",
+                "中性",
+                "全部"
+              ],
+              "type": "string",
+              "description": "资讯情感方向"
+            }
+          },
+          "type": "object"
+        }
+      }
+    ]
+  },
+  "hexin-ifind-ds-stock-mcp": {
+    "status": "online",
+    "tools": [
+      {
+        "name": "get_stock_summary",
+        "description": "A股股票数据信息摘要，适合快速了解股票某方面信息的场景。不支持具体指标和具体时间的筛选。主要支持以下方面内容的查询：上市公司基础信息、近期行情走势、最新财务指标、IPO信息、业绩预告、估值水平、股本股东分布、行业分类与主营业务等。样例问句: 同花顺和恒生电子最新估值水平",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "查询内容，要求包含证券实体、查询信息；最多支持同时查询5只股票的信息摘要"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "search_stocks",
+        "description": "智能选股，根据自然语言要求找到符合的A股股票，输出股票代码列表。\n常见选股依据包括不限于：\n- 1.按指标数值选股：如行情指标、财务指标值约束\n- 2.按业务分类选股：如行业板块、主题概念、主营业务\n(出于上下文资源考虑，不建议选股条件范围过大)\n\n请求样例:\n{\n\"query\":\"汽车零部件行业的市值大于1000亿的股票\"\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "选股要求描述，避免主观、歧义表达"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "get_stock_performance",
+        "description": "A股股票日频历史行情数据、以及通过行情衍生的技术指标、技术形态数据查询。不支持高频行情指标。\n主要覆盖下列数据指标类型：\n- 1.历史日行情数据：如开高低收价格序列、成交量(额)、收益率\n- 2.技术指标：技术分析指标日频数据，包括不限于趋势类、成交量类、超买超卖类、波动类等（如MACD、KDJ等） \n- 3.技术形态：股票历史走势形态定性指标，如连续涨跌、涨跌停、连板、创新高(低)、突破反转等\n- 4.日行情相关：融资融券、龙虎榜等与每日交易强相关的指标。**注意**: 本工具查询行情指标为日频收盘后维度，如需日内实时最新行情指标，请选择实时行情查询工具。\n\n请求样例:\n{\n\"query\":\"三花智控最近5日的涨跌幅与换手率\"\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "指标查询要求，包含证券实体、指标名称、日期等查询要素注意: 涉及时间序列的请求请注明起止日期(如`20260617-20260717`)，避免使用动态相对日期(如`过去20个交易日`)"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "get_stock_info",
+        "description": "A股股票基本资料查询，主要包括：\n- 1.证券基本信息：如股票简称代码、上市发行信息、是否属于某类重要标的（如转融通、指数成分股）等基本信息\n- 2.上市公司基本资料：如公司名称、所属行业分类、工商注册相关信息、主营业务简介等基础信息\n\n请求样例:\n{\n\"query\":\"格力电器的上市时间与所属申万行业\"\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "指标查询要求，包含证券实体、指标名称、日期等查询要素"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "get_stock_shareholders",
+        "description": "股票股本结构与股东结构数据，主要包括：\n- 1.股本结构：如总股本、自由流通股本以及其他各类股本占比数据（如AB股、限售解禁股本、海外股本等）\n- 2.股东数据：如前n大股东持股信息、机构持股信息、各类型股东数量及持股比例等数据\n\n请求样例:\n{\n\"query\":\"光明乳业的流通股占比、前5大股东持股占比\"\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "指标查询要求，包含证券实体、指标名称、日期等查询要素"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "get_stock_financials",
+        "description": "A股股票财务数据与财务类衍生指标查询，主要包括：\n- 1.财务报表原始数据：如资产负债、收入利润\n- 2.财务分析指标：偿债、盈利、成长、风险、规模、杠杆等方面财务指标，如ROE、资产负债率等\n- 3.估值类指标：如市盈率（PE）、市净率（PB）、市销率（PS）、企业价值倍数等衡量公司估值水平的指标，以及指标值所处的分位数\n注：财务类指标时间为报告期格式\n\n请求样例:\n{\n\"query\":\"科大讯飞在2025-12-31的ROE、净利润率\"\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "指标查询要求，包含证券实体、指标名称、日期等查询要素"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "get_risk_indicators",
+        "description": "A股股票的定量风险指标，指在金融工程视角下基于历史价格序列计算的风险衡量指标，包括alpha、beta、波动率、夏普比率、VAR等衡量风险的定量指标。不涉及财务或经营风险。\n\n请求样例:\n{\n\"query\":\"航天电子过去1年的beta指标值（以沪深300作为市场基准）\"\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "指标查询要求，包含证券实体、指标名称、日期等查询要素"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "get_stock_events",
+        "description": "查询A股上市公司在发生的公开披露事件信息以及事件相关数据，典型事件包括不限于：\n- 1.首发上市（IPO）\n- 2.再融资与投资事件：如配股、增发、并购重组等\n- 3.管理层事件：实控人、董监高、管理层、核心人员变动等\n- 4.股本与股东事件：大股东增减持、解禁销售等\n- 5.公司治理事件：股权激励、员工持股等\n- 6.经营与监管风险事件：风险警示、监管问询、司法诉讼等\n\n请求样例:\n{\n\"query\":\"摩尔线程IPO首次发行新股数量\"\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "指标查询要求，包含证券实体、指标名称、日期等查询要素"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "get_esg_data",
+        "description": "A股上市公司ESG评级与报告数据\n\n请求样例:\n{\n\"query\":\"诚意药业的中诚信ESG评级\"\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "指标查询要求，包含证券实体、指标名称、日期等查询要素"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "stock_highfreq_quotes",
+        "description": "A股股票行情数据的实时快照与高频序列。\n输入股票代码/简称列表、查询指标列表、时间周期参数等，返回指定股票高频实时行情指标时间序列数据。\n数据边界：仅支持交易日日内数据查询，不支持历史数据查询。\n\n请求样例:\n{\n  'symbols': '300033.SZ,300059,贵州茅台',\n  'indicators': '开盘价,最高价,最低价,收盘价,涨跌幅,成交量',\n  'data_mode': 'real_time',\n  'interval': 1\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "indicators": {
+              "type": "string",
+              "description": "查询指标列表，通过逗号拼接枚举值指标名称，支持指标清单见枚举值，单次请求上限10个。\n实时行情与高频序列均支持指标:开盘价,最高价,最低价,涨跌,涨跌幅,成交额,成交量,换手率;\n仅实时行情支持指标:最新价,现额,现量,委比,委差,量比,总股本,总市值,市净率,1分钟涨跌幅,3分钟涨跌幅,5分钟涨跌幅,流通市值,市盈率TTM;\n仅高频序列支持指标:收盘价,均价,内盘,外盘,MA均线5周期,MA均线10周期,MA均线20周期,MA均线60周期,KDJ随机指标K值,KDJ随机指标D值,KDJ随机指标J值,MACD指标DIFF值,MACD指标DEA值,MACD指标MACD值,RSI相对强弱指标6周期,RSI相对强弱指标12周期;注意:相同指标不同参数的指标名，单次请求仅支持输入一个，如`MA均线20周期`。"
+            },
+            "interval": {
+              "type": "integer",
+              "description": "高频序列模式下的时间间隔参数，值为1代表查询1分钟行情bar,以此类推，默认1分钟。",
+              "enum": [
+                1,
+                3,
+                5,
+                10,
+                15,
+                30,
+                60
+              ]
+            },
+            "symbols": {
+              "type": "string",
+              "description": "股票主体列表，支持股票六位代码/同花顺代码/标准股票简称三种表达方式，多个股票主体用逗号拼接，单次请求上限10个"
+            },
+            "data_mode": {
+              "type": "string",
+              "description": "查询数据模式，选项包含高频时间序列(highfreq)和最新实时快照(real_time)",
+              "enum": [
+                "highfreq",
+                "real_time"
+              ]
+            }
+          },
+          "required": [
+            "data_mode",
+            "indicators",
+            "symbols"
+          ]
+        }
+      }
+    ]
+  },
+  "hexin-ifind-ds-edb-mcp": {
+    "status": "online",
+    "tools": [
+      {
+        "name": "get_edb_data",
+        "description": "宏观及行业经济指标数据查询工具，主要覆盖:\n- 1.全球宏观指标:国际经济组织发布的全球经济数据及外国宏观经济指标，如美国GDP\n- 2.中国宏观指标:全国宏观及各省市区域经济指标，如工业增加值\n- 3.行业经济指标:各行业主要产品的产销量、进出口等指标，如新能源汽车产量\n- 4.大宗商品数据:上游能源、金属、化工、农产品等主要大宗商品的量价、产销、库存等数据，如PTA周产量\n\n请求样例:\n{\n\"query\":\"光伏电池产量当月值（202301-202506）\"\n}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "查询宏观经济或行业经济指标数据的要求，要素尽可能清晰详尽，可能包括不限于:专业指标名称术语、时间范围、国家地区、数据频率、统计类型(如同比、环比、累计值)等"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      },
+      {
+        "name": "search_edb",
+        "description": "宏观及行业经济指标数据搜索工具，基于模糊数据需求来搜索可能符合条件的同花顺行业经济数据指标信息，适用于不确定明确数据指标的场景。搜索需求可能包括：\n- 1.行业、产业领域或具体产品名称\n- 2.国家、地区范围限制\n- 3.需求指标的场景和研究方向\n- 4.指标维度的筛选\n基于该工具的返回值指标信息进行判断，对于满足需求的指标可配合“EDB取数工具”，输入指标名称和时间范围以进行数据查询。\n\n请求样例:\n{\n\"query\":\"光模块产业链的相关指标\"\n}}",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "宏观经济指标搜索需求，表明想找什么样的指标，可能涉及行业产业领域、国家地区、指标维度等方面的需求"
+            }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    ]
+  },
+  "hexin-ifind-ds-fund-mcp": {
+    "status": "online",
+    "tools": [
+      {
+        "name": "search_funds",
+        "description": "智能选基工具，筛选符合条件的基金产品，输入自然语言选基条件，返回相关基金代码、名称及选基依据数据。常见选基条件包括不限于：行情表现、业绩指标、持仓分布、基金管理人等。样例问句：仓股包含新易盛的基金",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "基金筛选的具体条件要求，采用清晰、定量、无歧义的自然语言",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "get_fund_profile",
+        "description": "基金基本资料查询，主要覆盖：\n- 1.基金基本信息：基金名称、代码、分类、费率等\n- 2.基金发行信息：基金发行机构、发行日、发行份额等\n\n请求样例\n{\n\"query\":\"工银双盈债券A(010068)的发行日期与发行费率\"\n}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "指标查询要求，包含基金实体、指标名称要素",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "get_fund_market_performance",
+        "description": "基金行情、业绩及绩效评价指标查询，主要覆盖：\n- 1.基金行情：基金日频量价、资金流、融资融券、技术形态等\n- 2.基金业绩：基金净值变化、收益率、溢价率、同类排名等\n- 3.绩效评价指标：alpha、beta、夏普比率等。**注意**: 本工具查询行情指标为日频收盘后维度，如需日内实时最新行情指标，请选择实时行情查询工具。\n\n请求样例\n{\n\"query\":\"方正富邦策略精选A(010072)在近一周和近一月收益率\"\n}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "指标查询要求，包含基金实体、指标名称、数据日期等要素。注意: 涉及时间序列的请求请注明起止日期(如`20260617-20260717`)，避免使用动态相对日期(如`过去20个交易日`)",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "get_fund_ownership",
+        "description": "基金份额与持有人结构指标查询，主要覆盖：\n- 1.基金份额：基金当前份额、申赎、份额变动等\n- 2.基金持有人结构：持有人数量、各类持有人占比等\n\n请求样例\n{\n\"query\":\"湘财长弘灵活配置混合A(010076)在2025-06-30的申购总份额和赎回总份额\"\n}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "指标查询要求，包含基金实体、指标名称、数据日期等要素；相关指标为季报或半年报披露，日期描述采用报告期格式(如2025-06-30)",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "get_fund_portfolio",
+        "description": "基金投资标的与资产配置结构指标，主要覆盖：\n- 1.大类资产配置：股债基等资产占比等\n- 2.行业分布：基金在各行业的持仓分布、前n大行业名称等\n- 3.持仓明细：基金报告期披露持股、债、基的明细数据\n\n请求样例\n{\n\"query\":\"工银优质成长混合A(010088)在2025-06-30披露报告中的股票投资占比\"\n}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "指标查询要求，包含基金实体、指标名称、数据日期等要素；投资组合为季报披露，日期描述采用报告期格式(如2025-06-30)",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "get_fund_financials",
+        "description": "基金报告期财务指标查询，主要覆盖：\n- 1.基金财报：报告期基金资产、利润相关的财务数据与衍生指标\n- 2.基金分红：基金分红的额度、次数、预案等指标\n\n请求样例\n{\n\"query\":\"泰康浩泽混合A(010081)在2025-06-30的利润\"\n}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "指标查询要求，包含基金实体、指标名称、数据日期等要素；财务指标为季报披露，日期描述采用报告期格式(如2025-06-30)",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "get_fund_company_info",
+        "description": "基金所属的基金公司（机构）维度的指标，主要覆盖：\n- 1.机构基本信息：公司信息与旗下基金经理指标\n- 2.机构资管数据：资管规模、旗下基金数量、投资组合等\n- 3.机构财务指标：基金公司财报核心指标\n- 4.机构业绩绩效评价：公司维度的绩效评价指标（如收益率、alpha、beta）\n\n请求样例\n{\n\"query\":\"蜂巢丰瑞债券A(010084)所属基金公司的基金经理数量和平均从业年限\"\n}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "指标查询要求，包含基金实体、指标名称、数据日期等要素；财务、投资组合信息为季报披露，日期描述采用报告期格式(如2025-06-30)",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "fund_highfreq_quotes",
+        "description": "中国公募基金行情数据的实时快照与高频序列。\n输入基金代码/简称列表、查询指标列表、时间周期参数等，返回指定基金高频实时行情指标时间序列数据。\n数据边界：仅支持交易日日内数据查询，不支持历史数据查询。\n\n请求样例:\n{\n  \"symbols\": \"000307.OF,516850,易方达蓝筹精选混合\",\n  \"indicators\": \"最新价,IOPV净值估值,振幅,折价\",\n  \"data_mode\": \"real_time\",\n  \"interval\": 1\n}",
+        "parameters": {
+          "required": [
+            "data_mode",
+            "indicators",
+            "symbols"
+          ],
+          "properties": {
+            "interval": {
+              "enum": [
+                1,
+                3,
+                5,
+                10,
+                15,
+                30,
+                60
+              ],
+              "type": "integer",
+              "description": "高频序列模式下的时间间隔参数，值为1代表查询1分钟行情bar,以此类推，默认1分钟。"
+            },
+            "symbols": {
+              "description": "基金主体列表，支持基金同花顺代码(如`000307.OF`)、基金六位代码(如`000307`)或标准基金简称(如`易方达黄金ETF联接A`)三种表达方式，多个基金主体用逗号拼接，单次请求上限10个",
+              "type": "string"
+            },
+            "data_mode": {
+              "enum": [
+                "highfreq",
+                "real_time"
+              ],
+              "type": "string",
+              "description": "查询数据模式，选项包含高频时间序列(highfreq)和最新实时快照(real_time)"
+            },
+            "indicators": {
+              "description": "查询指标列表，通过逗号拼接枚举值指标名称，支持指标清单见枚举值，单次请求上限10个。\n实时行情与高频序列均支持指标:开盘价,最高价,最低价,涨跌,涨跌幅,成交额,成交量;\n仅实时行情支持指标:最新价,现手,内盘,外盘,IOPV净值估值,振幅,折价;\n仅高频序列支持指标:收盘价,均价;",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    ]
+  },
+  "hexin-ifind-ds-report-mcp": {
+    "status": "offline",
+    "code": 404
+  },
+  "hexin-ifind-ds-industry-mcp": {
+    "status": "offline",
+    "code": 404
+  },
+  "hexin-ifind-ds-bond-mcp": {
+    "status": "online",
+    "tools": [
+      {
+        "name": "bond_basic_info",
+        "description": "债券基本信息查询工具，主要支持以下类型指标:\n- 1.债券在交易所的基础信息及发债主体基本资料\n- 2.债券发行、兑付相关数据\n\n请求样例:{\"query\":\"23广东11、19黑龙江债01的发行期限与发行总额\"}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "查询内容，要求包含证券实体、查询信息、时间等参数。",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "bond_market_data",
+        "description": "债券行情数据与估值分析数据查询工具，主要支持以下类型指标:\n- 1.债券交易行情及报价\n- 2.债券估值分析(如估价、溢价)与风险收益分析(如久期、凸性)。**注意**: 本工具查询行情指标为日频收盘后维度，如需日内实时最新行情指标，请选择实时行情查询工具。\n\n请求样例:{\"query\":\"26国债01近五日收盘价、涨跌幅与最新久期、凸性\"}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "查询内容，要求包含证券实体、查询信息、时间等参数。注意: 涉及时间序列的请求请注明起止日期(如`20260617-20260717`)，避免使用动态相对日期(如`过去20个交易日`)",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "bond_financial_data",
+        "description": "债券财报数据及财务分析指标查询工具，主要支持以下类型指标:\n- 1.债券发债主体的财务报表指标\n- 2.债券发债主体的财务分析衍生指标\n\n请求样例:{\"query\":\"24辽港01、24皮城01在20251231的资产负债率和ROE\"}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "查询内容，要求包含证券实体、查询信息、时间等参数",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "bond_special_data",
+        "description": "债券特殊指标查询工具，针对特定债券独有指标，主要支持以下类型:\n- 1.信用债: 信用评级等信用风险分析相关指标\n- 2.回购: 债券回购相关的指标\n- 3.可转债: 可转债转股条款相关指标\n请求样例:{\"query\":\"华海转债、南航转债的最新转股价格及转换比例\"}",
+        "parameters": {
+          "required": [
+            "query"
+          ],
+          "properties": {
+            "query": {
+              "description": "查询内容，要求包含证券实体、查询信息、时间等参数",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      },
+      {
+        "name": "bond_highfreq_quotes",
+        "description": "债券行情数据的实时快照与高频序列。\n输入债券代码/简称列表、查询指标列表、时间周期参数等，返回指定债券的高频行情时间序列或最新行情快照。\n数据边界：仅支持交易日日内数据查询，不支持历史数据查询。仅支持交易所债券数据，不支持银行间市场。\n\n请求样例:\n{\n  \"symbols\": \"240025.IB,199222,大连2521\",\n  \"indicators\": \"开盘价,最高价,最低价,收盘价,成交量\",\n  \"data_mode\": \"highfreq\",\n  \"interval\": 1\n}",
+        "parameters": {
+          "required": [
+            "data_mode",
+            "indicators",
+            "symbols"
+          ],
+          "properties": {
+            "interval": {
+              "enum": [
+                1,
+                3,
+                5,
+                10,
+                15,
+                30,
+                60
+              ],
+              "type": "integer",
+              "description": "高频序列模式下的时间间隔参数，值为1代表查询1分钟行情bar,以此类推，默认1分钟。"
+            },
+            "symbols": {
+              "description": "债券主体列表，支持债券同花顺代码(如`240025.IB`)、交易所六位代码(如`240025`)或标准债券简称(如`24附息国债25`)三种表达方式，多个债券主体用逗号拼接，单次请求上限10个",
+              "type": "string"
+            },
+            "data_mode": {
+              "enum": [
+                "highfreq",
+                "real_time"
+              ],
+              "type": "string",
+              "description": "查询数据模式，选项包含高频时间序列(highfreq)和最新实时快照(real_time)"
+            },
+            "indicators": {
+              "description": "查询指标列表，通过逗号拼接枚举值指标名称，支持指标清单见枚举值，单次请求上限10个。\n实时行情与高频序列均支持指标:开盘价,最高价,最低价,均价,成交额,成交量;\n仅实时行情支持指标:最新价,现手,振幅,最新成交价;\n仅高频序列支持指标:收盘价,涨跌,涨跌幅,内盘,外盘;",
+              "type": "string"
+            }
+          },
+          "type": "object"
+        }
+      }
+    ]
+  },
+  "hexin-ifind-ds-announcement-mcp": {
+    "status": "offline",
+    "code": 404
+  }
+}
