@@ -105,52 +105,52 @@
       </div>
       <div class="panel-body">
         <div class="stepper-wrapper">
-          <div class="step-item" id="stepNode-CREATED">
+          <div class="step-item" id="stepNode-CREATED" data-tooltip="任务已创建，初始化调度并落盘初始快照" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-plus"></i></div>
             <div class="step-label">任务创建</div>
           </div>
           <div class="step-connector"></div>
-          <div class="step-item" id="stepNode-DECOMPOSING">
+          <div class="step-item" id="stepNode-DECOMPOSING" data-tooltip="Step 1: 拆解为2~4个独立子假设并制定动态检索计划" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-sitemap"></i></div>
             <div class="step-label">子假设拆解</div>
           </div>
           <div class="step-connector"></div>
-          <div class="step-item" id="stepNode-RETRIEVING">
+          <div class="step-item" id="stepNode-RETRIEVING" data-tooltip="Step 2: 调取扶摇财报三表、五维指标、K线与 iFinD 公告/新闻" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-cloud-arrow-down"></i></div>
             <div class="step-label">真实数据拉取</div>
           </div>
           <div class="step-connector"></div>
-          <div class="step-item" id="stepNode-EXTRACTING_AND_COMPUTING">
+          <div class="step-item" id="stepNode-EXTRACTING_AND_COMPUTING" data-tooltip="Step 3: 双轨抽取原子事实（防伪核验）+ Python 严格同比与单季计算" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-calculator"></i></div>
             <div class="step-label">抽取与确定性计算</div>
           </div>
           <div class="step-connector"></div>
-          <div class="step-item" id="stepNode-SUFFICIENCY_CHECKING">
+          <div class="step-item" id="stepNode-SUFFICIENCY_CHECKING" data-tooltip="Step 4: 评估数据充分性，判定是否触发定向补检" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
             <div class="step-label">覆盖度审查</div>
           </div>
           <div class="step-connector"></div>
-          <div class="step-item" id="stepNode-REPLENISHING">
+          <div class="step-item" id="stepNode-REPLENISHING" data-tooltip="Step 4: 顺延回溯检索新材料（最多1轮，新材料重新回流抽取）" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-rotate-right"></i></div>
             <div class="step-label">定向补检回溯</div>
           </div>
           <div class="step-connector"></div>
-          <div class="step-item" id="stepNode-CLASSIFYING">
+          <div class="step-item" id="stepNode-CLASSIFYING" data-tooltip="Step 5: 审慎组织证据卡片，真实回写各子假设判定与置信度" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-layer-group"></i></div>
             <div class="step-label">审慎证据归类</div>
           </div>
           <div class="step-connector"></div>
-          <div class="step-item" id="stepNode-VALIDATING">
+          <div class="step-item" id="stepNode-VALIDATING" data-tooltip="Step 6.1: 合成前四要素原文防伪硬核验与强 ID 完备性检查" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-shield-halved"></i></div>
             <div class="step-label">合成前质检门禁</div>
           </div>
           <div class="step-connector"></div>
-          <div class="step-item" id="stepNode-SYNTHESIZING">
+          <div class="step-item" id="stepNode-SYNTHESIZING" data-tooltip="Step 6.2~6.3: 合成三分法研报与反转条件，接受合成后质检" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-file-lines"></i></div>
             <div class="step-label">报告合成与后置质检</div>
           </div>
           <div class="step-connector"></div>
-          <div class="step-item" id="stepNode-COMPLETED">
+          <div class="step-item" id="stepNode-COMPLETED" data-tooltip="全链路校验通过，原子落盘持久化至任务库" data-tooltip-pos="bottom">
             <div class="step-icon"><i class="fa-solid fa-check"></i></div>
             <div class="step-label">终态落盘</div>
           </div>
@@ -228,24 +228,24 @@
           <div class="evidence-columns-grid">
             <!-- 支持证据列 -->
             <div class="evidence-col support-col">
-              <div class="col-header">
-                <h3><i class="fa-solid fa-thumbs-up"></i> 支持证据 (SUPPORT)</h3>
+              <div class="col-header" data-tooltip="直接增强或印证对应子假设成立的客观事实或确定性计算项">
+                <h3><i class="fa-solid fa-thumbs-up"></i> 支持证据 (SUPPORT) <i class="fa-solid fa-circle-info" style="font-size:11px;margin-left:4px;opacity:0.7;"></i></h3>
                 <span class="col-count" id="supportCount">0</span>
               </div>
               <div class="cards-list" id="supportCardsList"></div>
             </div>
             <!-- 反对证据列 -->
             <div class="evidence-col against-col">
-              <div class="col-header">
-                <h3><i class="fa-solid fa-thumbs-down"></i> 反对证据 (AGAINST)</h3>
+              <div class="col-header" data-tooltip="直接削弱、矛盾或反驳对应子假设因果逻辑的事实或计算项（如现金流滞后、费用率反向变动）">
+                <h3><i class="fa-solid fa-thumbs-down"></i> 反对证据 (AGAINST) <i class="fa-solid fa-circle-info" style="font-size:11px;margin-left:4px;opacity:0.7;"></i></h3>
                 <span class="col-count" id="againstCount">0</span>
               </div>
               <div class="cards-list" id="againstCardsList"></div>
             </div>
             <!-- 无法验证证据列 -->
             <div class="evidence-col unverifiable-col">
-              <div class="col-header">
-                <h3><i class="fa-solid fa-circle-question"></i> 无法验证 (UNVERIFIABLE)</h3>
+              <div class="col-header" data-tooltip="针对该假说维度的关键公开披露存在缺失或未审计，提示客观数据缺口">
+                <h3><i class="fa-solid fa-circle-question"></i> 无法验证 (UNVERIFIABLE) <i class="fa-solid fa-circle-info" style="font-size:11px;margin-left:4px;opacity:0.7;"></i></h3>
                 <span class="col-count" id="unverifiableCount">0</span>
               </div>
               <div class="cards-list" id="unverifiableCardsList"></div>

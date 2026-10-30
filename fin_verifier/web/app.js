@@ -7,6 +7,23 @@ let currentTaskData = null;
 let pollTimer = null;
 let demosCache = [];
 
+const TOOLTIP_TEXTS = {
+  // 结论判定状态
+  SUPPORTED: "【充分证实 / 支持】有直接、充分、无矛盾的法定披露或财务账目支持该假设，因果链条严密闭环。",
+  PARTIALLY_SUPPORTED: "【部分支持 / 一致】具备宏观方向一致性证据（如营收大增），但缺乏细分产品利润直接审计账目，审慎防范越级归因。",
+  REFUTED: "【被证伪 / 反驳】存在明确反向事实或关键财务指标相抵触（如综合毛利提升有限，研发费用压缩贡献更大）。",
+  UNVERIFIABLE: "【客观无法验证 / 存疑】现有公开披露缺少必要数据，坚持材料不足不妄断，不调用模型外部记忆胡乱猜测。",
+  
+  // 置信度
+  HIGH: "【高置信度】至少有 2~3 项经代码交叉校验的财务核心指标或法定公文直接印证。",
+  MEDIUM: "【中置信度】依据合并报表整体推导、或有单项反向数据支撑，但缺少单品审计拆解明细。",
+  LOW: "【低置信度】核心公开数据缺失，信息存在明显盲区，通常对应无法验证项。",
+  
+  // 反转条件
+  HISTORICAL_ATTRIBUTION: "【历史归因推翻条件】若后续补充披露经审计的分部单品账目，证实某一因素确实贡献主导利润，则当前被反驳结论将被推翻并重新支持。",
+  FUTURE_SUSTAINABILITY: "【未来持续性失效条件】即便当前盈利亮眼，未来在行业价格战或毛利率下滑、现金流背离时，该盈利驱动模式即告失效。"
+};
+
 function escapeHtml(str) {
   if (str === null || str === undefined) return "";
   return String(str)
@@ -297,6 +314,7 @@ function renderTaskResults(task) {
   // 总结论看板
   const vTag = document.getElementById("verdictStatusTag");
   vTag.innerText = report.verdict_status;
+  vTag.setAttribute("data-tooltip", TOOLTIP_TEXTS[report.verdict_status] || "研报总结论判定");
   if (report.verdict_status === "SUPPORTED") {
     vTag.style.backgroundColor = "var(--success)";
   } else if (report.verdict_status === "PARTIALLY_SUPPORTED") {
@@ -310,7 +328,9 @@ function renderTaskResults(task) {
     vTag.style.color = "#fff";
   }
 
-  document.getElementById("confidenceLevelTag").innerText = `${report.confidence_level} 置信度`;
+  const cTag = document.getElementById("confidenceLevelTag");
+  cTag.innerText = `${report.confidence_level} 置信度`;
+  cTag.setAttribute("data-tooltip", TOOLTIP_TEXTS[report.confidence_level] || "证据链整体置信度");
   document.getElementById("verdictHeadlineText").innerText = report.verdict_headline;
   document.getElementById("complianceDisclaimerText").innerText = report.compliance_disclaimer;
 
@@ -327,6 +347,8 @@ function renderTaskResults(task) {
       const supCount = (sh.supported_evidence_ids || []).length;
       const agCount = (sh.against_evidence_ids || []).length;
       const unvCount = (sh.unverifiable_evidence_ids || []).length;
+      const vTip = TOOLTIP_TEXTS[sh.verdict_status] || "子假设判定状态";
+      const cTip = TOOLTIP_TEXTS[sh.confidence_level] || "子假设置信度";
       return `
         <div class="sub-hypothesis-card">
           <div class="sub-card-header">
@@ -335,8 +357,8 @@ function renderTaskResults(task) {
           </div>
           <div class="sub-statement-text">${escapeHtml(sh.statement)}</div>
           <div class="sub-verdict-row">
-            <span class="sub-badge ${vClass}">${escapeHtml(sh.verdict_status || "UNVERIFIABLE")}</span>
-            <span class="badge badge-info">${escapeHtml(sh.confidence_level || "LOW")} 置信度</span>
+            <span class="sub-badge ${vClass}" data-tooltip="${escapeHtml(vTip)}">${escapeHtml(sh.verdict_status || "UNVERIFIABLE")} <i class="fa-solid fa-circle-info" style="font-size:10px;margin-left:3px;"></i></span>
+            <span class="badge badge-info" data-tooltip="${escapeHtml(cTip)}">${escapeHtml(sh.confidence_level || "LOW")} 置信度 <i class="fa-solid fa-circle-info" style="font-size:10px;margin-left:3px;"></i></span>
           </div>
           <div class="sub-evidence-meta">
             <span><i class="fa-solid fa-thumbs-up"></i> 支持: ${supCount}</span>
@@ -355,9 +377,10 @@ function renderTaskResults(task) {
     const isHist = trig.trigger_type === "HISTORICAL_ATTRIBUTION";
     const typeLabel = isHist ? "历史归因推翻条件" : "未来持续性失效条件";
     const cardClass = isHist ? "history" : "future";
+    const trigTip = isHist ? TOOLTIP_TEXTS.HISTORICAL_ATTRIBUTION : TOOLTIP_TEXTS.FUTURE_SUSTAINABILITY;
     return `
       <div class="falsification-card ${cardClass}">
-        <span class="trigger-badge">${typeLabel}</span>
+        <span class="trigger-badge" data-tooltip="${escapeHtml(trigTip)}">${typeLabel} <i class="fa-solid fa-circle-info" style="font-size:10px;margin-left:4px;"></i></span>
         <div class="trigger-desc">${escapeHtml(trig.condition_description)}</div>
         <div class="trigger-basis"><strong>分析依据:</strong> ${escapeHtml(trig.analytical_basis)}</div>
       </div>
